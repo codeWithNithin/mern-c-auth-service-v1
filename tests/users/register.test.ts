@@ -230,19 +230,12 @@ describe('POST /auth/register', () => {
 
             await request(app).post('/auth/register').send(userData)
 
-            await db.insert(users).values({
-                firstName: userData.firstName.trim(),
-                lastName: userData.lastName.trim(),
-                email: userData.email,
-                password: userData.password,
-            })
-
             const userList = await db.select().from(users)
             assert.strictEqual(userList[0]?.firstName, 'Nithin')
         })
 
         it('should trim lastName, if there are space at starting and ending', async () => {
-            // Arrange
+            // ARRANGE
             const userData = {
                 firstName: 'Nithin',
                 lastName: ' V Kumar ',
@@ -251,18 +244,13 @@ describe('POST /auth/register', () => {
                 // role: Roles.CUSTOMER,
             }
 
-            // Act
+            // ACT
 
             await request(app).post('/auth/register').send(userData)
 
-            await db.insert(users).values({
-                firstName: userData.firstName.trim(),
-                lastName: userData.lastName.trim(),
-                email: userData.email,
-                password: userData.password,
-            })
-
             const userList = await db.select().from(users)
+
+            // ASSERT
             assert.strictEqual(userList[0]?.lastName, 'V Kumar')
         })
     })
@@ -309,6 +297,48 @@ describe('POST /auth/register', () => {
             assert.ok(response.headers['content-type'])
             // i want to match this content type to json
             assert.match(response.headers['content-type'], /json/)
+        })
+
+        it('should persist user in database', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
+                //  role: Roles.CUSTOMER,
+            }
+
+            // Act
+            await request(app).post('/auth/register').send(userData)
+
+            const userList = await db.select().from(users)
+            // check if in database, we store the user or user cocunt is 1 or not
+            assert.strictEqual(userList.length, 1)
+            assert.strictEqual(userList[0].firstName, userData.firstName)
+            assert.strictEqual(userList[0].lastName, userData.lastName)
+            assert.strictEqual(userList[0].email, userData.email)
+            assert.strictEqual(userList[0].password, userData.password)
+        })
+
+        it('should return user id in response', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
+                //  role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            const userList = await db.select().from(users)
+
+            assert.strictEqual(response.body.id, userList[0]?.id)
         })
     })
 })
