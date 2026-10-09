@@ -1,6 +1,7 @@
 import { drizzle } from 'drizzle-orm/node-postgres'
 import pg from 'pg'
 import { Config } from '../config/env.js'
+import logger from '../config/logger.js'
 
 const { Pool } = pg
 
@@ -11,12 +12,15 @@ const pool = new Pool({
 export const db = drizzle({ client: pool })
 
 export async function connectDB() {
-    const client = await pool.connect()
+    let client
 
     try {
-        await client.query('SELECT 1')
-        console.log('PostgreSQL connected')
+        client = await pool.connect()
+        logger.info('Database connected successfully')
+    } catch (error) {
+        logger.error('Database connection failed', { error })
+        throw error
     } finally {
-        client.release()
+        client?.release()
     }
 }

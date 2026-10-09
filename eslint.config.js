@@ -8,7 +8,11 @@ export default tseslint.config(
     {
         rules: {
             'dot-notation': 'error',
-            // 'no-console': 'error',
+            'no-console': 'error',
+            'no-nested-ternary': 'warn',
+            'no-else-return': 'error',
+            'prefer-const': 'error',
+            'object-shorthand': 'error',
         },
     },
 )

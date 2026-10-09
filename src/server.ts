@@ -12,8 +12,7 @@ async function startServer() {
             logger.info('server running at PORT', { port: PORT })
         })
     } catch (err) {
-        console.log(err)
-        logger.error('err from server', { err: err })
+        logger.error('err from server', { err })
     }
 }
 

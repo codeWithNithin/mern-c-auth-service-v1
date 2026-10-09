@@ -41,8 +41,6 @@ describe('POST /auth/register', () => {
                 .post('/auth/register')
                 .send(userData)
 
-            console.log(response)
-
             // Assert
             // i dont want this content type header to be undefined
             assert.ok(response.headers['content-type'])
