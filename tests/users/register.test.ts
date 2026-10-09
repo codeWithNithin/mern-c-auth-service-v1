@@ -152,6 +152,67 @@ describe('POST /auth/register', () => {
             assert.strictEqual(userList.length, 0)
             assert.strictEqual(response.statusCode, 400)
         })
+
+        it('should return 400 if password is missing', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'nithin@gmail.com',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            assert.strictEqual(response.statusCode, 400)
+        })
+
+        it('should return 400 if password is empty', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nihtin',
+                lastName: 'V Kumar',
+                email: 'nithin@gmail.com',
+                password: '',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            const userList = await db.select().from(users)
+
+            assert.strictEqual(userList.length, 0)
+            assert.strictEqual(response.statusCode, 400)
+        })
+    })
+
+    describe('password validation', () => {
+        it('should return 400 if password is less than 8 characters', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'nithin@gmail.com',
+                password: 'secret', // 6 characters
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            // Assert
+            const userList = await db.select().from(users)
+
+            assert.strictEqual(response.statusCode, 400)
+            assert.strictEqual(userList.length, 0)
+        })
     })
 
     describe('field trimming', () => {

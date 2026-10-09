@@ -16,10 +16,20 @@ export default checkSchema({
     email: {
         trim: true,
         notEmpty: {
-            errorMessage: 'Email is required.',
+            errorMessage: 'Email is required',
         },
         isEmail: {
             errorMessage: 'Email must be valid',
+        },
+    },
+    password: {
+        trim: true,
+        notEmpty: {
+            errorMessage: 'password is required',
+        },
+        isLength: {
+            options: { min: 8 },
+            errorMessage: 'Password should be at least 8 chars',
         },
     },
 })
