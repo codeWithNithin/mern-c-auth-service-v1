@@ -5,7 +5,7 @@ import logger from '../config/logger.js'
 
 const { Pool } = pg
 
-const pool = new Pool({
+export const pool = new Pool({
     connectionString: Config.DATABASE_URL,
 })
 

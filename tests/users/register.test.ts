@@ -1,9 +1,89 @@
-import { describe, it } from 'node:test'
+import { after, beforeEach, describe, it } from 'node:test'
 import request from 'supertest'
-import app from '../../src/app'
+import app from '../../src/app.js'
 import assert from 'node:assert'
 
+import { sql } from 'drizzle-orm'
+
+import { db, pool } from '../../src/db/index.js'
+import { users } from '../../src/db/schema.js'
+
 describe('POST /auth/register', () => {
+    beforeEach(async () => {
+        await db.execute(sql`TRUNCATE TABLE users RESTART IDENTITY CASCADE`)
+    })
+
+    after(async () => {
+        await pool.end()
+    })
+
+    describe('fields missing', () => {
+        it('should return 400 if firstName is missing', async () => {
+            // Arrange
+            const userData = {
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            assert.strictEqual(response.statusCode, 400)
+        })
+
+        it('should return 400 if firstName is empty', async () => {
+            // Arrange
+            const userData = {
+                firstName: '',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            const userList = await db.select().from(users)
+
+            assert.strictEqual(userList.length, 0)
+            assert.strictEqual(response.statusCode, 400)
+        })
+    })
+
+    describe('field trimming', () => {
+        it('should trim firstName, if there are space at starting and ending', async () => {
+            // Arrange
+            const userData = {
+                firstName: ' Nithin ',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+
+            await request(app).post('/auth/register').send(userData)
+
+            await db.insert(users).values({
+                firstName: userData.firstName.trim(),
+                lastName: userData.lastName.trim(),
+                email: userData.email,
+                password: userData.password,
+            })
+
+            const userList = await db.select().from(users)
+            assert.strictEqual(userList[0]?.firstName, 'Nithin')
+        })
+    })
+
     describe('all fields are given', () => {
         it('should return 201 status code', async () => {
             // Arrange
@@ -21,7 +101,7 @@ describe('POST /auth/register', () => {
                 .send(userData)
 
             // assert
-            assert.strictEqual(response.status, 201)
+            assert.strictEqual(response.statusCode, 201)
         })
 
         it('should return a valid json response', async () => {
@@ -48,6 +128,4 @@ describe('POST /auth/register', () => {
             assert.match(response.headers['content-type'], /json/)
         })
     })
-
-    describe('fields missing', () => {})
 })
