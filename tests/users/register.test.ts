@@ -93,6 +93,65 @@ describe('POST /auth/register', () => {
             assert.strictEqual(userList.length, 0)
             assert.strictEqual(response.statusCode, 400)
         })
+
+        it('should return 400 if email is missing', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                password: 'secret-password',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            assert.strictEqual(response.statusCode, 400)
+        })
+
+        it('should return 400 if email is empty', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nihtin',
+                lastName: 'V Kumar',
+                email: '',
+                password: 'secret-password',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            const userList = await db.select().from(users)
+
+            assert.strictEqual(userList.length, 0)
+            assert.strictEqual(response.statusCode, 400)
+        })
+
+        it('should return 400 if email is not valid', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nihtin',
+                lastName: 'V Kumar',
+                email: 'nithingmail.com',
+                password: 'secret-password',
+                // role: Roles.CUSTOMER,
+            }
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            const userList = await db.select().from(users)
+
+            assert.strictEqual(userList.length, 0)
+            assert.strictEqual(response.statusCode, 400)
+        })
     })
 
     describe('field trimming', () => {

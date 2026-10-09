@@ -13,4 +13,13 @@ export default checkSchema({
             errorMessage: 'last name is required.',
         },
     },
+    email: {
+        trim: true,
+        notEmpty: {
+            errorMessage: 'Email is required.',
+        },
+        isEmail: {
+            errorMessage: 'Email must be valid',
+        },
+    },
 })
