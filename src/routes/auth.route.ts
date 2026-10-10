@@ -5,6 +5,7 @@ import UserService from '../services/user.service.js'
 import logger from '../config/logger.js'
 import UserRepository from '../repositories/user.repository.js'
 import { db } from '../db/index.js'
+import PasswordService from '../services/password.service.js'
 
 const authRouter = express.Router()
 
@@ -12,7 +13,8 @@ const authRouter = express.Router()
 const userRepository = new UserRepository(db)
 
 // services
-const userService = new UserService(userRepository)
+const passwordService = new PasswordService()
+const userService = new UserService(userRepository, passwordService)
 
 // controllers
 const authController = new AuthController(userService, logger)

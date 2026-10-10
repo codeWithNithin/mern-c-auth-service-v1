@@ -316,11 +316,6 @@ describe('POST /auth/register', () => {
             const userList = await db.select().from(users)
             // check if in database, we store the user or user cocunt is 1 or not
             assert.strictEqual(userList.length, 1)
-            assert.strictEqual(userList[0].firstName, userData.firstName)
-            assert.strictEqual(userList[0].lastName, userData.lastName)
-            assert.strictEqual(userList[0].email, userData.email)
-            assert.strictEqual(userList[0].password, userData.password)
-            assert.strictEqual(userList[0].role, userData.role)
         })
 
         it('should return user id in response', async () => {
@@ -394,6 +389,30 @@ describe('POST /auth/register', () => {
 
             // and check that role field contains only customer value
             assert.strictEqual(userList[0]?.role, Roles.CUSTOMER)
+        })
+
+        it('should have password hashed', async () => {
+            // ARRANGE
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V kumar',
+                email: 'nithin@gmail.com',
+                password: 'secret-password',
+                role: Roles.CUSTOMER,
+            }
+
+            // ACT
+            await request(app).post('/auth/register').send(userData)
+
+            const userList = await db.select().from(users)
+            // ASSERT
+
+            // check if its length is 60
+            // confirm that the incoming request and response password wont be same...
+            assert.notStrictEqual(userList[0].password, userData.password)
+            assert.strictEqual(userList[0]?.password.length, 60)
+            // check that we have hashed the password with the regex...
+            assert.match(userList[0].password, /^\$2[ab]\$\d+\$/)
         })
     })
 })
