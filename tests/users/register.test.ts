@@ -340,5 +340,34 @@ describe('POST /auth/register', () => {
 
             assert.strictEqual(response.body.id, userList[0]?.id)
         })
+
+        it('should return 400 if user already exists', async () => {
+            // Arrange
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
+                //  role: Roles.CUSTOMER,
+            }
+
+            // inserting the db insert first before making request to get the 400 status code..
+            await db.insert(users).values({
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                email: userData.email,
+                password: userData.password,
+            })
+
+            // Act
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            const userList = await db.select().from(users)
+
+            assert.strictEqual(response.statusCode, 400)
+            assert.strictEqual(userList.length, 1)
+        })
     })
 })
