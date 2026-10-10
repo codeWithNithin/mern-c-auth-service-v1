@@ -39,7 +39,14 @@ class UserService {
         }
 
         const accessToken = this.tokenService.createAccessToken(payload)
-        const refreshToken = this.tokenService.createAccessToken(payload)
+
+        const userId = Number(user?.id)
+        const newRefreshToken =
+            await this.tokenService.persistRefreshToken(userId)
+        const refreshToken = this.tokenService.createRefreshToken({
+            ...payload,
+            id: newRefreshToken?.id,
+        })
 
         return {
             user,

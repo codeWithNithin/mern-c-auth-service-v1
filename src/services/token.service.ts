@@ -3,8 +3,12 @@ import { Config } from '../config/env.js'
 import fs from 'fs'
 import { fileURLToPath } from 'node:url'
 import createHttpError from 'http-errors'
+import { refreshTokens } from '../db/schema.js'
+import type { db as database } from '../db/index.js'
 
 class TokenService {
+    constructor(private readonly db: typeof database) {}
+
     private accessTokenSecret: string | undefined
     private refreshTokenSecret: string | undefined
 
@@ -65,6 +69,21 @@ class TokenService {
             expiresIn: '7d',
             issuer: 'auth-service',
         })
+    }
+
+    async persistRefreshToken(userId: number) {
+        // 365 days
+        const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365
+
+        const [newRefreshToken] = await this.db
+            .insert(refreshTokens)
+            .values({
+                userId,
+                expiresIn: new Date(Date.now() + MS_IN_YEAR),
+            })
+            .returning({ id: refreshTokens.id })
+
+        return newRefreshToken
     }
 }
 

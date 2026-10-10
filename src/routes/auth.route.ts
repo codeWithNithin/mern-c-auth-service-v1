@@ -15,7 +15,7 @@ const userRepository = new UserRepository(db)
 
 // services
 const passwordService = new PasswordService()
-const tokenService = new TokenService()
+const tokenService = new TokenService(db)
 const userService = new UserService(
     userRepository,
     passwordService,

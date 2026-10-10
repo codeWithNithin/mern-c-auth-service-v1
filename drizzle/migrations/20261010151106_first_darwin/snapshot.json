@@ -1,0 +1,202 @@
+{
+    "version": "8",
+    "dialect": "postgres",
+    "id": "f37f6c90-21df-4639-bdc8-bfda4e116495",
+    "prevIds": ["74169b79-7007-4f28-89f0-c6110bf4c613"],
+    "ddl": [
+        {
+            "isRlsEnabled": false,
+            "name": "refreshtokens",
+            "entityType": "tables",
+            "schema": "public"
+        },
+        {
+            "isRlsEnabled": false,
+            "name": "users",
+            "entityType": "tables",
+            "schema": "public"
+        },
+        {
+            "type": "serial",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "id",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "refreshtokens"
+        },
+        {
+            "type": "timestamp with time zone",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "expiresIn",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "refreshtokens"
+        },
+        {
+            "type": "integer",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "userId",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "refreshtokens"
+        },
+        {
+            "type": "timestamp with time zone",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": "now()",
+            "generated": null,
+            "identity": null,
+            "name": "createdAt",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "refreshtokens"
+        },
+        {
+            "type": "timestamp with time zone",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": "now()",
+            "generated": null,
+            "identity": null,
+            "name": "updatedAt",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "refreshtokens"
+        },
+        {
+            "type": "serial",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "id",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(255)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "firstName",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(255)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "lastName",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(255)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "email",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(60)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "password",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(20)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "role",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "nameExplicit": false,
+            "columns": ["userId"],
+            "schemaTo": "public",
+            "tableTo": "users",
+            "columnsTo": ["id"],
+            "onUpdate": "NO ACTION",
+            "onDelete": "CASCADE",
+            "name": "refreshtokens_userId_users_id_fkey",
+            "entityType": "fks",
+            "schema": "public",
+            "table": "refreshtokens"
+        },
+        {
+            "columns": ["id"],
+            "nameExplicit": false,
+            "name": "refreshtokens_pkey",
+            "schema": "public",
+            "table": "refreshtokens",
+            "entityType": "pks"
+        },
+        {
+            "columns": ["id"],
+            "nameExplicit": false,
+            "name": "users_pkey",
+            "schema": "public",
+            "table": "users",
+            "entityType": "pks"
+        },
+        {
+            "nameExplicit": false,
+            "columns": ["email"],
+            "nullsNotDistinct": false,
+            "name": "users_email_key",
+            "schema": "public",
+            "table": "users",
+            "entityType": "uniques"
+        }
+    ],
+    "renames": []
+}

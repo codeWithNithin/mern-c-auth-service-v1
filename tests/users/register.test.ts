@@ -3,10 +3,10 @@ import request from 'supertest'
 import app from '../../src/app.js'
 import assert from 'node:assert'
 
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 import { db, pool } from '../../src/db/index.js'
-import { users } from '../../src/db/schema.js'
+import { refreshTokens, users } from '../../src/db/schema.js'
 import { Roles } from '../../src/constants'
 import { isValidJWT } from '../../src/utils'
 
@@ -476,6 +476,37 @@ describe('POST /auth/register', () => {
             // i want jwt token to get validated while converitng it into normal data...
             assert.strictEqual(isValidJWT(accessToken), true)
             assert.strictEqual(isValidJWT(refreshToken), true)
+        })
+
+        it('should persist refreshtoken in database', async () => {
+            // ARRANGE
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V kumar',
+                email: 'nithin@gmail.com',
+                password: 'secret-password',
+                role: Roles.CUSTOMER,
+            }
+
+            // ACT
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            // await db.select().from(refreshTokens).innerJoin(users)
+
+            // SELECT * FROM refreshTokens
+            // INNER JOIN users
+            // ON refreshTokens.userId = response.body.id
+            // WHERE refreshtoken.user = 1
+
+            const refreshTokensList = await db
+                .select()
+                .from(refreshTokens)
+                .innerJoin(users, eq(refreshTokens.userId, users.id))
+                .where(eq(refreshTokens.userId, response.body.id))
+
+            assert.strictEqual(refreshTokensList.length, 1)
         })
     })
 })
