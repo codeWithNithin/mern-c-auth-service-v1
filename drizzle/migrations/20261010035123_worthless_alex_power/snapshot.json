@@ -1,0 +1,110 @@
+{
+    "version": "8",
+    "dialect": "postgres",
+    "id": "74169b79-7007-4f28-89f0-c6110bf4c613",
+    "prevIds": ["66a0742c-d333-49be-a07d-241f919e6f0f"],
+    "ddl": [
+        {
+            "isRlsEnabled": false,
+            "name": "users",
+            "entityType": "tables",
+            "schema": "public"
+        },
+        {
+            "type": "serial",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "id",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(255)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "firstName",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(255)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "lastName",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(255)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "email",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(60)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "password",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "type": "varchar(20)",
+            "typeSchema": null,
+            "notNull": true,
+            "dimensions": 0,
+            "default": null,
+            "generated": null,
+            "identity": null,
+            "name": "role",
+            "entityType": "columns",
+            "schema": "public",
+            "table": "users"
+        },
+        {
+            "columns": ["id"],
+            "nameExplicit": false,
+            "name": "users_pkey",
+            "schema": "public",
+            "table": "users",
+            "entityType": "pks"
+        },
+        {
+            "nameExplicit": false,
+            "columns": ["email"],
+            "nullsNotDistinct": false,
+            "name": "users_email_key",
+            "schema": "public",
+            "table": "users",
+            "entityType": "uniques"
+        }
+    ],
+    "renames": []
+}

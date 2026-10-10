@@ -7,6 +7,7 @@ import { sql } from 'drizzle-orm'
 
 import { db, pool } from '../../src/db/index.js'
 import { users } from '../../src/db/schema.js'
+import { Roles } from '../../src/constants'
 
 describe('POST /auth/register', () => {
     beforeEach(async () => {
@@ -368,6 +369,29 @@ describe('POST /auth/register', () => {
 
             assert.strictEqual(response.statusCode, 400)
             assert.strictEqual(userList.length, 1)
+        })
+
+        it('should assign a customer role', async () => {
+            // ARRANGE
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V kumar',
+                email: 'nithin@gmail.com',
+                password: 'secret-password',
+                role: Roles.CUSTOMER,
+            }
+
+            // ACT
+            await request(app).post('/auth/register').send(userData)
+
+            const userList = await db.select().from(users)
+            // ASSERT
+
+            // check if the role exists
+            assert.ok('role' in userList[0])
+
+            // and check that role field contains only customer value
+            assert.strictEqual(userList[0]?.role, Roles.CUSTOMER)
         })
     })
 })
