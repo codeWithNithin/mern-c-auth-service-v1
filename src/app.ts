@@ -2,11 +2,14 @@ import express, { type Request, type Response } from 'express'
 import type { HttpError } from 'http-errors'
 import logger from './config/logger.js'
 import authRouter from './routes/auth.route.js'
+import cookieParser from 'cookie-parser'
 
 const app = express()
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+app.use(express.static('public', { dotfiles: 'allow' }))
 
 app.use('/auth', authRouter)
 

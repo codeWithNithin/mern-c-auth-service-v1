@@ -6,6 +6,7 @@ import logger from '../config/logger.js'
 import UserRepository from '../repositories/user.repository.js'
 import { db } from '../db/index.js'
 import PasswordService from '../services/password.service.js'
+import TokenService from '../services/token.service.js'
 
 const authRouter = express.Router()
 
@@ -14,7 +15,12 @@ const userRepository = new UserRepository(db)
 
 // services
 const passwordService = new PasswordService()
-const userService = new UserService(userRepository, passwordService)
+const tokenService = new TokenService()
+const userService = new UserService(
+    userRepository,
+    passwordService,
+    tokenService,
+)
 
 // controllers
 const authController = new AuthController(userService, logger)

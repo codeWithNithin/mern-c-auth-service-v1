@@ -3,11 +3,14 @@ import type UserRepository from '../repositories/user.repository.js'
 import type { RegisterUserInput } from '../types/index.js'
 import type CredentialService from './password.service.js'
 import { Roles } from '../constants/index.js'
+import type TokenService from './token.service.js'
+import type { JwtPayload } from 'jsonwebtoken'
 
 class UserService {
     constructor(
         private userRepository: UserRepository,
         private credentialService: CredentialService,
+        private tokenService: TokenService,
     ) {}
 
     async createUser(userData: RegisterUserInput) {
@@ -24,11 +27,25 @@ class UserService {
             userData.password,
         )
 
-        return this.userRepository.createUser({
+        const user = await this.userRepository.createUser({
             ...userData,
             password: hashedPassword,
             role: Roles.CUSTOMER,
         })
+
+        const payload: JwtPayload = {
+            sub: String(user?.id),
+            role: user?.role,
+        }
+
+        const accessToken = this.tokenService.createAccessToken(payload)
+        const refreshToken = this.tokenService.createAccessToken(payload)
+
+        return {
+            user,
+            accessToken,
+            refreshToken,
+        }
     }
 }
 

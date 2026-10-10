@@ -10,7 +10,7 @@ class UserRepository {
         const [user] = await this.db
             .insert(users)
             .values(userData)
-            .returning({ id: users.id })
+            .returning({ id: users.id, role: users.role })
 
         return user
     }
