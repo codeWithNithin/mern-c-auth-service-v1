@@ -1,7 +1,8 @@
 import createHttpError from 'http-errors'
 import type UserRepository from '../repositories/user.repository.js'
-import type { UserData } from '../types/index.js'
+import type { RegisterUserInput } from '../types/index.js'
 import type CredentialService from './password.service.js'
+import { Roles } from '../constants/index.js'
 
 class UserService {
     constructor(
@@ -9,7 +10,7 @@ class UserService {
         private credentialService: CredentialService,
     ) {}
 
-    async createUser(userData: UserData) {
+    async createUser(userData: RegisterUserInput) {
         const existingUser = await this.userRepository.findByEmail(
             userData.email,
         )
@@ -26,6 +27,7 @@ class UserService {
         return this.userRepository.createUser({
             ...userData,
             password: hashedPassword,
+            role: Roles.CUSTOMER,
         })
     }
 }

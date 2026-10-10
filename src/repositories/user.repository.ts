@@ -1,12 +1,12 @@
 import { eq } from 'drizzle-orm'
 import type { db as database } from '../db/index.js'
 import { users } from '../db/schema.js'
-import type { UserData } from '../types/index.js'
+import type { NewUser } from '../types/index.js'
 
 class UserRepository {
     constructor(private readonly db: typeof database) {}
 
-    async createUser(userData: UserData) {
+    async createUser(userData: NewUser) {
         const [user] = await this.db
             .insert(users)
             .values(userData)

@@ -414,5 +414,22 @@ describe('POST /auth/register', () => {
             // check that we have hashed the password with the regex...
             assert.match(userList[0].password, /^\$2[ab]\$\d+\$/)
         })
+
+        it('should never return password in response', async () => {
+            // ARRANGE
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V kumar',
+                email: 'nithin@gmail.com',
+                password: 'secret-password',
+                role: Roles.CUSTOMER,
+            }
+
+            // ACT
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+            assert.strictEqual('password' in response.body, false)
+        })
     })
 })
