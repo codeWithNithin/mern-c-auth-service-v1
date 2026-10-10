@@ -1,7 +1,7 @@
 import express, { type Request, type Response } from 'express'
 import type { HttpError } from 'http-errors'
 import logger from './config/logger.js'
-import authRouter from './routes/auth.js'
+import authRouter from './routes/auth.route.js'
 
 const app = express()
 

@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors'
-import type UserRepository from '../repositories/user.js'
+import type UserRepository from '../repositories/user.repository.js'
 import type { UserData } from '../types/index.js'
 
 class UserService {

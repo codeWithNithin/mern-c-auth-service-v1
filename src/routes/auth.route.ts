@@ -1,9 +1,9 @@
 import express from 'express'
-import AuthController from '../controllers/auth.js'
+import AuthController from '../controllers/auth.controller.js'
 import registerValidator from '../validators/register.validator.js'
-import UserService from '../services/user.js'
+import UserService from '../services/user.service.js'
 import logger from '../config/logger.js'
-import UserRepository from '../repositories/user.js'
+import UserRepository from '../repositories/user.repository.js'
 import { db } from '../db/index.js'
 
 const authRouter = express.Router()

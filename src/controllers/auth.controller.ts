@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import { validationResult } from 'express-validator'
-import type UserService from '../services/user.js'
+import type UserService from '../services/user.service.js'
 import type { Logger } from 'winston'
 import { Roles } from '../constants/index.js'
 
