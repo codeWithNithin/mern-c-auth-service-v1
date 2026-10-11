@@ -1,13 +1,14 @@
 import { after, beforeEach, describe, it } from 'node:test'
 import { db, pool } from '../../src/db'
-import { sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import request from 'supertest'
 import bcrypt from 'bcryptjs'
 
 import app from '../../src/app'
 import assert from 'node:assert'
-import { users } from '../../src/db/schema'
+import { refreshTokens, users } from '../../src/db/schema'
 import { Roles } from '../../src/constants'
+import { isValidJWT } from '../../src/utils'
 
 describe('POST /auth/login', () => {
     beforeEach(async () => {
@@ -228,6 +229,84 @@ describe('POST /auth/login', () => {
             })
 
             assert.strictEqual(response.statusCode, 400)
+        })
+
+        it('should return accessToken and refreshToken in cookie', async () => {
+            // ARRANGE
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V kumar',
+                email: 'nithin@gmail.com',
+                password: 'secret-password',
+            }
+
+            // ACT
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            interface Headers {
+                'set-cookie': string[]
+            }
+
+            const cookies =
+                (response.headers as unknown as Headers)['set-cookie'] || []
+            let accessToken = null,
+                refreshToken = null
+
+            // accessToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjkzOTA5Mjc2LCJleHAiOjE2OTM5MDkzMzYsImlzcyI6Im1lcm5zcGFjZSJ9.KetQMEzY36vxhO6WKwSR-P_feRU1yI-nJtp6RhCEZQTPlQlmVsNTP7mO-qfCdBr0gszxHi9Jd1mqf-hGhfiK8BRA_Zy2CH9xpPTBud_luqLMvfPiz3gYR24jPjDxfZJscdhE_AIL6Uv2fxCKvLba17X0WbefJSy4rtx3ZyLkbnnbelIqu5J5_7lz4aIkHjt-rb_sBaoQ0l8wE5KzyDNy7mGUf7cI_yR8D8VlO7x9llbhvCHF8ts6YSBRBt_e2Mjg5txtfBaDq5auCTXQ2lmnJtMb75t1nAFu8KwQPrDYmwtGZDkHUcpQhlP7R-y3H99YnrWpXbP8Zr_oO67hWnoCSw; Max-Age=43200; Domain=localhost; Path=/; Expires=Tue, 05 Sep 2023 22:21:16 GMT; HttpOnly; SameSite=Strict
+            // refreshToken=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjkzOTA5Mjc2LCJleHAiOjE2OTM5MDkzMzYsImlzcyI6Im1lcm5zcGFjZSJ9.KetQMEzY36vxhO6WKwSR-P_feRU1yI-nJtp6RhCEZQTPlQlmVsNTP7mO-qfCdBr0gszxHi9Jd1mqf-hGhfiK8BRA_Zy2CH9xpPTBud_luqLMvfPiz3gYR24jPjDxfZJscdhE_AIL6Uv2fxCKvLba17X0WbefJSy4rtx3ZyLkbnnbelIqu5J5_7lz4aIkHjt-rb_sBaoQ0l8wE5KzyDNy7mGUf7cI_yR8D8VlO7x9llbhvCHF8ts6YSBRBt_e2Mjg5txtfBaDq5auCTXQ2lmnJtMb75t1nAFu8KwQPrDYmwtGZDkHUcpQhlP7R-y3H99YnrWpXbP8Zr_oO67hWnoCSw; Max-Age=43200; Domain=localhost; Path=/; Expires=Tue, 05 Sep 2023 22:21:16 GMT; HttpOnly; SameSite=Strict
+            cookies.forEach((cookie) => {
+                if (cookie.startsWith('accessToken=')) {
+                    accessToken = cookie.split(';')[0].split('=')[1]
+                }
+
+                if (cookie.startsWith('refreshToken=')) {
+                    refreshToken = cookie.split(';')[0].split('=')[1]
+                }
+            })
+
+            // accesstoken and refreshtoken should not be null
+            assert.notStrictEqual(accessToken, null)
+            assert.notStrictEqual(refreshToken, null)
+
+            // if both tokens are empty strings then it should not succeed
+            assert.ok(accessToken)
+            assert.ok(refreshToken)
+
+            // i want jwt token to get validated while converitng it into normal data...
+            assert.strictEqual(isValidJWT(accessToken), true)
+            assert.strictEqual(isValidJWT(refreshToken), true)
+        })
+
+        it('should persist refreshtoken in database', async () => {
+            // ARRANGE
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V kumar',
+                email: 'nithin@gmail.com',
+                password: 'secret-password',
+            }
+
+            // ACT
+            const response = await request(app)
+                .post('/auth/register')
+                .send(userData)
+
+            // await db.select().from(refreshTokens).innerJoin(users)
+
+            // SELECT * FROM refreshTokens
+            // INNER JOIN users
+            // ON refreshTokens.userId = response.body.id
+            // WHERE refreshtoken.user = 1
+
+            const refreshTokensList = await db
+                .select()
+                .from(refreshTokens)
+                .innerJoin(users, eq(refreshTokens.userId, users.id))
+                .where(eq(refreshTokens.userId, response.body.id))
+
+            assert.strictEqual(refreshTokensList.length, 1)
         })
     })
 })

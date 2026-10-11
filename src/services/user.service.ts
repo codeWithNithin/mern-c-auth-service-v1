@@ -74,8 +74,27 @@ class UserService {
             throw err
         }
 
+        const payload: JwtPayload = {
+            sub: String(existingUser?.id),
+            role: existingUser?.role,
+        }
+
+        const accessToken = this.tokenService.createAccessToken(payload)
+
+        const userId = Number(existingUser?.id)
+
+        const newRefreshToken =
+            await this.tokenService.persistRefreshToken(userId)
+
+        const refreshToken = this.tokenService.createRefreshToken({
+            ...payload,
+            id: newRefreshToken?.id,
+        })
+
         return {
             user: existingUser,
+            accessToken,
+            refreshToken,
         }
     }
 }

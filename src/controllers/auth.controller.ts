@@ -75,16 +75,19 @@ class AuthController {
 
         try {
             // 2. check if user exists
-            await this.userService.getUserByEmail(email, password)
+            const { user, accessToken, refreshToken } =
+                await this.userService.getUserByEmail(email, password)
 
             // 3. check if password matches
 
             // 4. if both are present, then generate accessToken and refreshtoken...
 
             // 5. send access token and refresh token in cookie
+            this.setCookie(res, 'accessToken', accessToken)
+            this.setCookie(res, 'refreshToken', refreshToken)
 
             // 6. in response only send user id
-            res.status(200).json()
+            res.status(200).json({ id: user.id })
         } catch (err) {
             next(err)
             return

@@ -19,7 +19,11 @@ class UserRepository {
     async findByEmail(email: string) {
         // SELECT  * FROM users WLHERE email = email i recieve
         const [user] = await this.db
-            .select()
+            .select({
+                id: users.id,
+                password: users.password,
+                role: users.role,
+            })
             .from(users)
             .where(eq(users.email, email))
             .limit(1)
