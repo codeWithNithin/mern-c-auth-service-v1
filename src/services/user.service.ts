@@ -1,29 +1,28 @@
 import createHttpError from 'http-errors'
-import type UserRepository from '../repositories/user.repository.js'
-import type { RegisterUserInput } from '../types/index.js'
-import type CredentialService from './password.service.js'
-import { Roles } from '../constants/index.js'
-import type TokenService from './token.service.js'
 import type { JwtPayload } from 'jsonwebtoken'
+import type UserRepository from '../repositories/user.repository.js'
+import type PasswordService from './password.service.js'
+import type TokenService from './token.service.js'
+import { Roles } from '../constants/index.js'
+import type { AuthResult, RegisterUserInput } from '../types/index.js'
 
 class UserService {
     constructor(
-        private userRepository: UserRepository,
-        private credentialService: CredentialService,
-        private tokenService: TokenService,
+        private readonly userRepository: UserRepository,
+        private readonly passwordService: PasswordService,
+        private readonly tokenService: TokenService,
     ) {}
 
-    async createUser(userData: RegisterUserInput) {
+    async register(userData: RegisterUserInput): Promise<AuthResult> {
         const existingUser = await this.userRepository.findByEmail(
             userData.email,
         )
 
         if (existingUser) {
-            const err = createHttpError(400, 'user already exists')
-            throw err
+            throw createHttpError(400, 'User is already registered')
         }
 
-        const hashedPassword = await this.credentialService.createHashPassword(
+        const hashedPassword = await this.passwordService.createHashPassword(
             userData.password,
         )
 
@@ -33,69 +32,57 @@ class UserService {
             role: Roles.CUSTOMER,
         })
 
-        const payload: JwtPayload = {
-            sub: String(user?.id),
-            role: user?.role,
+        if (!user) {
+            throw createHttpError(500, 'Failed to create user')
         }
 
-        const accessToken = this.tokenService.createAccessToken(payload)
-
-        const userId = Number(user?.id)
-
-        const newRefreshToken =
-            await this.tokenService.persistRefreshToken(userId)
-
-        const refreshToken = this.tokenService.createRefreshToken({
-            ...payload,
-            id: newRefreshToken?.id,
-        })
-
-        return {
-            user,
-            accessToken,
-            refreshToken,
-        }
+        return this.issueTokens(user)
     }
 
-    async getUserByEmail(email: string, password: string) {
-        const existingUser = await this.userRepository.findByEmail(email)
+    async login(email: string, password: string): Promise<AuthResult> {
+        const user = await this.userRepository.findByEmail(email)
 
-        if (!existingUser) {
-            throw createHttpError(400, 'user credentials does not match')
+        if (!user) {
+            throw createHttpError(400, 'Invalid email or password')
         }
 
-        const isPwdMatch = await this.credentialService.verifyPassword(
+        const isPasswordValid = await this.passwordService.verifyPassword(
             password,
-            existingUser.password,
+            user.password,
         )
 
-        if (!isPwdMatch) {
-            const err = createHttpError(400, 'user credentials does not match')
-            throw err
+        if (!isPasswordValid) {
+            throw createHttpError(400, 'Invalid email or password')
         }
 
+        return this.issueTokens(user)
+    }
+
+    private async issueTokens(user: {
+        id: number
+        role: string
+    }): Promise<AuthResult> {
         const payload: JwtPayload = {
-            sub: String(existingUser?.id),
-            role: existingUser?.role,
+            sub: String(user.id),
+            role: user.role,
         }
 
         const accessToken = this.tokenService.createAccessToken(payload)
 
-        const userId = Number(existingUser?.id)
+        const refreshTokenRecord = await this.tokenService.persistRefreshToken(
+            user.id,
+        )
 
-        const newRefreshToken =
-            await this.tokenService.persistRefreshToken(userId)
+        if (!refreshTokenRecord) {
+            throw createHttpError(500, 'Failed to persist refresh token')
+        }
 
         const refreshToken = this.tokenService.createRefreshToken({
             ...payload,
-            id: newRefreshToken?.id,
+            id: refreshTokenRecord.id,
         })
 
-        return {
-            user: existingUser,
-            accessToken,
-            refreshToken,
-        }
+        return { user: { id: user.id }, accessToken, refreshToken }
     }
 }
 

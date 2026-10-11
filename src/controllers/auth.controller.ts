@@ -43,7 +43,7 @@ class AuthController {
         })
 
         try {
-            const result = await this.userService.createUser({
+            const result = await this.userService.register({
                 firstName,
                 lastName,
                 email,
@@ -73,18 +73,23 @@ class AuthController {
 
         const { email, password } = req.body
 
+        this.logger.info('new user login request', {
+            email,
+            password: '******',
+        })
+
         try {
             // 2. check if user exists
             const { user, accessToken, refreshToken } =
-                await this.userService.getUserByEmail(email, password)
-
-            // 3. check if password matches
-
-            // 4. if both are present, then generate accessToken and refreshtoken...
+                await this.userService.login(email, password)
 
             // 5. send access token and refresh token in cookie
             this.setCookie(res, 'accessToken', accessToken)
             this.setCookie(res, 'refreshToken', refreshToken)
+
+            this.logger.info('user logged in successfully', {
+                id: user.id,
+            })
 
             // 6. in response only send user id
             res.status(200).json({ id: user.id })

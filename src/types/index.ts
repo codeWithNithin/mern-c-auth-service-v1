@@ -12,3 +12,9 @@ export interface NewUser {
     password: string
     role: string
 }
+
+export interface AuthResult {
+    user: { id: number }
+    accessToken: string
+    refreshToken: string
+}
