@@ -47,5 +47,21 @@ describe('POST /auth/login', () => {
             // ASSERT
             assert.strictEqual(response.statusCode, 400)
         })
+
+        it('should return 400 status code if email is not valid', async () => {
+            // ARRANGE
+            const userData = {
+                email: 'nithin',
+                password: 'Password@123',
+            }
+
+            // ACT
+            const response = await request(app)
+                .post('/auth/login')
+                .send(userData)
+
+            // ASSERT
+            assert.strictEqual(response.statusCode, 400)
+        })
     })
 })
