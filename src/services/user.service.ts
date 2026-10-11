@@ -57,11 +57,21 @@ class UserService {
         }
     }
 
-    async getUserByEmail(email: string) {
+    async getUserByEmail(email: string, password: string) {
         const existingUser = await this.userRepository.findByEmail(email)
 
         if (!existingUser) {
-            throw createHttpError(400, 'user does not exists')
+            throw createHttpError(400, 'user credentials does not match')
+        }
+
+        const isPwdMatch = await this.credentialService.verifyPassword(
+            password,
+            existingUser.password,
+        )
+
+        if (!isPwdMatch) {
+            const err = createHttpError(400, 'user credentials does not match')
+            throw err
         }
 
         return {

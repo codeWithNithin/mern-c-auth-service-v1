@@ -71,11 +71,11 @@ class AuthController {
             return res.status(400).json({ errors: result.array() })
         }
 
-        const { email } = req.body
+        const { email, password } = req.body
 
         try {
             // 2. check if user exists
-            await this.userService.getUserByEmail(email)
+            await this.userService.getUserByEmail(email, password)
 
             // 3. check if password matches
 
