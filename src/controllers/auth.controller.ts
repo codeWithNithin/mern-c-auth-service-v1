@@ -80,6 +80,7 @@ class AuthController {
         // 5. send access token and refresh token in cookie
 
         // 6. in response only send user id
+        res.status(200).json()
     }
 }
 

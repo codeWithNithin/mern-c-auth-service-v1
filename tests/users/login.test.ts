@@ -117,4 +117,41 @@ describe('POST /auth/login', () => {
             assert.strictEqual(userList.length, 0)
         })
     })
+
+    describe('given all fields', () => {
+        it('should return 200 status code', async () => {
+            // ARRANGE
+            const userData = {
+                email: 'nithin',
+                password: 'Password@123',
+            }
+
+            // ACT
+            const response = await request(app)
+                .post('/auth/login')
+                .send(userData)
+
+            // ASSERT
+            assert.strictEqual(response.statusCode, 200)
+        })
+
+        it('should return valid json', async () => {
+            // ARRANGE
+            const userData = {
+                email: 'nithin',
+                password: 'Password@123',
+            }
+
+            // ACT
+            const response = await request(app)
+                .post('/auth/login')
+                .send(userData)
+
+            // ASSERT
+            // i dont want this content type header to be undefined
+            assert.ok(response.headers['content-type'])
+            // i want to match this content type to json
+            assert.match(response.headers['content-type'], /json/)
+        })
+    })
 })
