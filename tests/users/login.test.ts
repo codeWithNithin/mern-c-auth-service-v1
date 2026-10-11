@@ -122,7 +122,7 @@ describe('POST /auth/login', () => {
         it('should return 200 status code', async () => {
             // ARRANGE
             const userData = {
-                email: 'nithin',
+                email: 'nithin@gmail.com',
                 password: 'Password@123',
             }
 
@@ -138,7 +138,7 @@ describe('POST /auth/login', () => {
         it('should return valid json', async () => {
             // ARRANGE
             const userData = {
-                email: 'nithin',
+                email: 'nithin@gmail.com',
                 password: 'Password@123',
             }
 
