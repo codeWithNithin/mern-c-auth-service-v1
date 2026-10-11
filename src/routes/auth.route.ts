@@ -7,6 +7,7 @@ import UserRepository from '../repositories/user.repository.js'
 import { db } from '../db/index.js'
 import PasswordService from '../services/password.service.js'
 import TokenService from '../services/token.service.js'
+import loginValidator from '../validators/login.validator.js'
 
 const authRouter = express.Router()
 
@@ -29,6 +30,12 @@ authRouter.post(
     '/register',
     registerValidator,
     authController.register.bind(authController),
+)
+
+authRouter.post(
+    '/login',
+    loginValidator,
+    authController.login.bind(authController),
 )
 
 export default authRouter

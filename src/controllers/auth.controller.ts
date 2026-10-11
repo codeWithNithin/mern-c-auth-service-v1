@@ -62,6 +62,25 @@ class AuthController {
             next(err)
         }
     }
+
+    login(req: Request, res: Response) {
+        // 1. validate the incoming request
+        const result = validationResult(req)
+
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() })
+        }
+
+        // 2. check if user exists
+
+        // 3. check if password matches
+
+        // 4. if both are present, then generate accessToken and refreshtoken...
+
+        // 5. send access token and refresh token in cookie
+
+        // 6. in response only send user id
+    }
 }
 
 export default AuthController
