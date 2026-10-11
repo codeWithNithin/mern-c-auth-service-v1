@@ -41,8 +41,10 @@ class UserService {
         const accessToken = this.tokenService.createAccessToken(payload)
 
         const userId = Number(user?.id)
+
         const newRefreshToken =
             await this.tokenService.persistRefreshToken(userId)
+
         const refreshToken = this.tokenService.createRefreshToken({
             ...payload,
             id: newRefreshToken?.id,
@@ -52,6 +54,18 @@ class UserService {
             user,
             accessToken,
             refreshToken,
+        }
+    }
+
+    async getUserByEmail(email: string) {
+        const existingUser = await this.userRepository.findByEmail(email)
+
+        if (!existingUser) {
+            throw createHttpError(400, 'user does not exists')
+        }
+
+        return {
+            user: existingUser,
         }
     }
 }

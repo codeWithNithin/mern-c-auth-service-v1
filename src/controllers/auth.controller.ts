@@ -63,7 +63,7 @@ class AuthController {
         }
     }
 
-    login(req: Request, res: Response) {
+    async login(req: Request, res: Response, next: NextFunction) {
         // 1. validate the incoming request
         const result = validationResult(req)
 
@@ -71,16 +71,24 @@ class AuthController {
             return res.status(400).json({ errors: result.array() })
         }
 
-        // 2. check if user exists
+        const { email } = req.body
 
-        // 3. check if password matches
+        try {
+            // 2. check if user exists
+            await this.userService.getUserByEmail(email)
 
-        // 4. if both are present, then generate accessToken and refreshtoken...
+            // 3. check if password matches
 
-        // 5. send access token and refresh token in cookie
+            // 4. if both are present, then generate accessToken and refreshtoken...
 
-        // 6. in response only send user id
-        res.status(200).json()
+            // 5. send access token and refresh token in cookie
+
+            // 6. in response only send user id
+            res.status(200).json()
+        } catch (err) {
+            next(err)
+            return
+        }
     }
 }
 

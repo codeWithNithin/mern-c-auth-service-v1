@@ -2,10 +2,12 @@ import { after, beforeEach, describe, it } from 'node:test'
 import { db, pool } from '../../src/db'
 import { sql } from 'drizzle-orm'
 import request from 'supertest'
+import bcrypt from 'bcryptjs'
 
 import app from '../../src/app'
 import assert from 'node:assert'
 import { users } from '../../src/db/schema'
+import { Roles } from '../../src/constants'
 
 describe('POST /auth/login', () => {
     beforeEach(async () => {
@@ -122,14 +124,25 @@ describe('POST /auth/login', () => {
         it('should return 200 status code', async () => {
             // ARRANGE
             const userData = {
-                email: 'nithin@gmail.com',
-                password: 'Password@123',
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
             }
 
+            const hashedPassword = await bcrypt.hash(userData.password, 10)
+
+            await db.insert(users).values({
+                ...userData,
+                password: hashedPassword,
+                role: Roles.CUSTOMER,
+            })
+
             // ACT
-            const response = await request(app)
-                .post('/auth/login')
-                .send(userData)
+            const response = await request(app).post('/auth/login').send({
+                email: userData.email,
+                password: userData.password,
+            })
 
             // ASSERT
             assert.strictEqual(response.statusCode, 200)
@@ -138,20 +151,57 @@ describe('POST /auth/login', () => {
         it('should return valid json', async () => {
             // ARRANGE
             const userData = {
-                email: 'nithin@gmail.com',
-                password: 'Password@123',
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
             }
 
+            const hashedPassword = await bcrypt.hash(userData.password, 10)
+
+            await db.insert(users).values({
+                ...userData,
+                password: hashedPassword,
+                role: Roles.CUSTOMER,
+            })
+
             // ACT
-            const response = await request(app)
-                .post('/auth/login')
-                .send(userData)
+            const response = await request(app).post('/auth/login').send({
+                email: userData.email,
+                password: userData.password,
+            })
 
             // ASSERT
             // i dont want this content type header to be undefined
             assert.ok(response.headers['content-type'])
             // i want to match this content type to json
             assert.match(response.headers['content-type'], /json/)
+        })
+
+        it('should return 400 if the user not present', async () => {
+            // ARRANGE
+            const userData = {
+                firstName: 'Nithin',
+                lastName: 'V Kumar',
+                email: 'something@something.com',
+                password: 'secret-password',
+            }
+
+            const hashedPassword = await bcrypt.hash(userData.password, 10)
+
+            await db.insert(users).values({
+                ...userData,
+                password: hashedPassword,
+                role: Roles.CUSTOMER,
+            })
+
+            // ACT
+            const response = await request(app).post('/auth/login').send({
+                email: 'nithin1@gmail.com',
+                password: userData.password,
+            })
+
+            assert.strictEqual(response.statusCode, 400)
         })
     })
 })

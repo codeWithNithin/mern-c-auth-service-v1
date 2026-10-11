@@ -7,6 +7,7 @@ class UserRepository {
     constructor(private readonly db: typeof database) {}
 
     async createUser(userData: NewUser) {
+        // INSERT INTO users VALUES (firstName, lastName, email, password);
         const [user] = await this.db
             .insert(users)
             .values(userData)
@@ -21,6 +22,7 @@ class UserRepository {
             .select()
             .from(users)
             .where(eq(users.email, email))
+            .limit(1)
 
         return user
     }
