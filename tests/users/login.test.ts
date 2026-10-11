@@ -31,19 +31,21 @@ describe('POST /auth/login', () => {
             // ASSERT
             assert.strictEqual(response.statusCode, 400)
         })
-    })
 
-    it('should return 400 status code if email is missing', async () => {
-        // ARRANGE
-        const userData = {
-            email: '',
-            password: 'Password@123',
-        }
+        it('should return 400 status code if email is empty', async () => {
+            // ARRANGE
+            const userData = {
+                email: '',
+                password: 'Password@123',
+            }
 
-        // ACT
-        const response = await request(app).post('/auth/login').send(userData)
+            // ACT
+            const response = await request(app)
+                .post('/auth/login')
+                .send(userData)
 
-        // ASSERT
-        assert.strictEqual(response.statusCode, 400)
+            // ASSERT
+            assert.strictEqual(response.statusCode, 400)
+        })
     })
 })
