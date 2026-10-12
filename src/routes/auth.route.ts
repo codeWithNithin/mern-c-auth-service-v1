@@ -9,6 +9,7 @@ import PasswordService from '../services/password.service.js'
 import TokenService from '../services/token.service.js'
 import loginValidator from '../validators/login.validator.js'
 import authenticateMiddleware from '../middlewares/authenticate.middleware.js'
+import verifyRefreshTokenMiddleare from '../middlewares/verify-refreshToken.middleare.js'
 
 const authRouter = express.Router()
 
@@ -43,6 +44,12 @@ authRouter.get(
     '/self',
     authenticateMiddleware,
     authController.self.bind(authController),
+)
+
+authRouter.get(
+    '/refresh',
+    verifyRefreshTokenMiddleare,
+    authController.refresh.bind(authController),
 )
 
 export default authRouter

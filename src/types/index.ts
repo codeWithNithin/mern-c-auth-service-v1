@@ -18,3 +18,7 @@ export interface AuthResult {
     accessToken: string
     refreshToken: string
 }
+
+export interface IRefreshTokenPayload {
+    id: string
+}

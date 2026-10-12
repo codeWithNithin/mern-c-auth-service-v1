@@ -68,6 +68,20 @@ class UserService {
         return user
     }
 
+    async refresh(user: { id: number; role: string; tokenId: number }) {
+        const existingUser = await this.userRepository.findById(user.id)
+
+        if (!existingUser) {
+            throw createHttpError(400, 'user doesnt exist')
+        }
+
+        const result = await this.issueTokens(user)
+
+        await this.userRepository.deleteRefreshToken(user.tokenId)
+
+        return result
+    }
+
     private async issueTokens(user: {
         id: number
         role: string

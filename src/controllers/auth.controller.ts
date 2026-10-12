@@ -110,6 +110,32 @@ class AuthController {
             next(err)
         }
     }
+
+    async refresh(req: Request, res: Response, next: NextFunction) {
+        // 1, i check if its valid or not and if its not valid
+
+        try {
+            const authInfo = {
+                id: Number(req.auth!.sub),
+                role: req.auth!.role,
+                tokenId: Number(req.auth!.id),
+            }
+
+            const { user, accessToken, refreshToken } =
+                await this.userService.refresh(authInfo)
+
+            this.setCookie(res, 'accessToken', accessToken)
+            this.setCookie(res, 'refreshToken', refreshToken)
+
+            res.status(200).json({ id: user.id })
+        } catch (err) {
+            next(err)
+        }
+
+        // 2. delete the refresh token
+        // 3. persist the new token
+        // 4. s
+    }
 }
 
 export default AuthController

@@ -68,7 +68,7 @@ class TokenService {
             algorithm: 'HS256',
             expiresIn: '1y',
             issuer: 'auth-service',
-            jwtid: payload.id,
+            jwtid: String(payload.id),
         })
     }
 
