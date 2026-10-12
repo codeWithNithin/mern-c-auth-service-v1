@@ -13,6 +13,9 @@ export const users = pgTable('users', {
     email: varchar('email', { length: 255 }).notNull().unique(),
     password: varchar('password', { length: 60 }).notNull(),
     role: varchar('role', { length: 20 }).notNull(),
+    tenantId: integer('tenantId')
+        .notNull()
+        .references(() => tenants.id),
 })
 
 export const refreshTokens = pgTable('refreshtokens', {
@@ -26,6 +29,29 @@ export const refreshTokens = pgTable('refreshtokens', {
     userId: integer('userId')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
+
+    createdAt: timestamp('createdAt', {
+        withTimezone: true,
+        mode: 'date',
+    })
+        .defaultNow()
+        .notNull(),
+
+    updatedAt: timestamp('updatedAt', {
+        withTimezone: true,
+        mode: 'date',
+    })
+        .defaultNow()
+        .$onUpdate(() => new Date())
+        .notNull(),
+})
+
+export const tenants = pgTable('tenants', {
+    id: serial('id').primaryKey(),
+
+    name: varchar('name', { length: 255 }).notNull(),
+
+    address: varchar('address', { length: 255 }).notNull(),
 
     createdAt: timestamp('createdAt', {
         withTimezone: true,
