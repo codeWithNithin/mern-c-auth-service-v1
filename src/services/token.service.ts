@@ -66,7 +66,7 @@ class TokenService {
 
         return jwt.sign(payload, refreshTokenSecret, {
             algorithm: 'HS256',
-            expiresIn: '7d',
+            expiresIn: '1y',
             issuer: 'auth-service',
         })
     }
