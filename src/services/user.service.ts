@@ -82,6 +82,10 @@ class UserService {
         return result
     }
 
+    async logout(tokenId: number) {
+        await this.userRepository.deleteRefreshToken(tokenId)
+    }
+
     private async issueTokens(user: {
         id: number
         role: string

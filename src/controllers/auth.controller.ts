@@ -136,6 +136,22 @@ class AuthController {
         // 3. persist the new token
         // 4. s
     }
+
+    async logout(req: Request, res: Response, next: NextFunction) {
+        try {
+            await this.userService.logout(Number(req.auth?.id))
+
+            this.logger.info('Refresh token has been deleted', {
+                id: req.auth?.id,
+            })
+
+            res.clearCookie('accessToken').clearCookie('refreshToken')
+
+            res.status(200).json({ message: 'logged out successfully !!!' })
+        } catch (err) {
+            next(err)
+        }
+    }
 }
 
 export default AuthController

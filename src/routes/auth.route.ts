@@ -52,4 +52,11 @@ authRouter.get(
     authController.refresh.bind(authController),
 )
 
+authRouter.get(
+    '/login',
+    authenticateMiddleware,
+    verifyRefreshTokenMiddleare,
+    authController.refresh.bind(authController),
+)
+
 export default authRouter
