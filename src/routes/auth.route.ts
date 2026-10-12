@@ -8,6 +8,7 @@ import { db } from '../db/index.js'
 import PasswordService from '../services/password.service.js'
 import TokenService from '../services/token.service.js'
 import loginValidator from '../validators/login.validator.js'
+import authenticateMiddleware from '../middlewares/authenticate.middleware.js'
 
 const authRouter = express.Router()
 
@@ -36,6 +37,12 @@ authRouter.post(
     '/login',
     loginValidator,
     authController.login.bind(authController),
+)
+
+authRouter.get(
+    '/self',
+    authenticateMiddleware,
+    authController.self.bind(authController),
 )
 
 export default authRouter

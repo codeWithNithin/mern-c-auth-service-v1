@@ -58,6 +58,16 @@ class UserService {
         return this.issueTokens(user)
     }
 
+    async self(id: number) {
+        const user = await this.userRepository.findById(id)
+
+        if (!user) {
+            throw createHttpError(400, 'user doesnt exist')
+        }
+
+        return user
+    }
+
     private async issueTokens(user: {
         id: number
         role: string

@@ -30,6 +30,22 @@ class UserRepository {
 
         return user
     }
+
+    async findById(id: number) {
+        const [user] = await this.db
+            .select({
+                id: users.id,
+                firstName: users.firstName,
+                lastName: users.lastName,
+                role: users.role,
+                email: users.email,
+            })
+            .from(users)
+            .where(eq(users.id, id))
+            .limit(1)
+
+        return user
+    }
 }
 
 export default UserRepository

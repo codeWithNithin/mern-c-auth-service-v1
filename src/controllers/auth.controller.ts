@@ -98,6 +98,18 @@ class AuthController {
             return
         }
     }
+
+    async self(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = Number(req.auth?.sub)
+
+            const user = await this.userService.self(userId)
+
+            res.status(200).json({ ...user })
+        } catch (err) {
+            next(err)
+        }
+    }
 }
 
 export default AuthController
