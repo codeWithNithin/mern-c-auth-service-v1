@@ -43,21 +43,24 @@ class AuthController {
         })
 
         try {
-            const result = await this.userService.register({
-                firstName,
-                lastName,
-                email,
-                password,
-            })
+            const { user, accessToken, refreshToken } =
+                await this.userService.register({
+                    firstName,
+                    lastName,
+                    email,
+                    password,
+                })
 
             this.logger.info('user created successfully', {
-                id: result.user?.id,
+                id: user.id,
             })
 
-            this.setCookie(res, 'accessToken', result.accessToken)
-            this.setCookie(res, 'refreshToken', result.refreshToken)
+            this.setCookie(res, 'accessToken', accessToken)
+            this.setCookie(res, 'refreshToken', refreshToken)
 
-            res.status(201).json({ id: result.user?.id })
+            this.logger.info('User has been logged in', { id: user.id })
+
+            res.status(201).json({ id: user.id })
         } catch (err) {
             next(err)
         }
@@ -105,6 +108,10 @@ class AuthController {
 
             const user = await this.userService.self(userId)
 
+            this.logger.info('user info fetched successfully', {
+                id: user.id,
+            })
+
             res.status(200).json({ ...user })
         } catch (err) {
             next(err)
@@ -112,8 +119,6 @@ class AuthController {
     }
 
     async refresh(req: Request, res: Response, next: NextFunction) {
-        // 1, i check if its valid or not and if its not valid
-
         try {
             const authInfo = {
                 id: Number(req.auth!.sub),
@@ -127,14 +132,14 @@ class AuthController {
             this.setCookie(res, 'accessToken', accessToken)
             this.setCookie(res, 'refreshToken', refreshToken)
 
+            this.logger.info('Refresh token been refreshed', {
+                id: user.id,
+            })
+
             res.status(200).json({ id: user.id })
         } catch (err) {
             next(err)
         }
-
-        // 2. delete the refresh token
-        // 3. persist the new token
-        // 4. s
     }
 
     async logout(req: Request, res: Response, next: NextFunction) {
