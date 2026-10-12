@@ -1,2 +1,1 @@
-ALTER TABLE "users" ALTER COLUMN "tenantId" SET NOT NULL;--> statement-breakpoint
 ALTER TABLE "users" ADD CONSTRAINT "users_tenantId_tenants_id_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenants"("id");

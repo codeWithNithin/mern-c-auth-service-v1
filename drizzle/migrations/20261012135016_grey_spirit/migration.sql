@@ -5,5 +5,3 @@ CREATE TABLE "tenants" (
 	"createdAt" timestamp with time zone DEFAULT now() NOT NULL,
 	"updatedAt" timestamp with time zone DEFAULT now() NOT NULL
 );
---> statement-breakpoint
-ALTER TABLE "users" ADD COLUMN "tenantId" integer;

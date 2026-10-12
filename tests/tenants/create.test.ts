@@ -1,0 +1,99 @@
+import { after, beforeEach, describe, it } from 'node:test'
+import { db, pool } from '../../src/db'
+import { sql } from 'drizzle-orm'
+import app from '../../src/app'
+import request from 'supertest'
+import mockJWKS, { type JWKSMock } from 'mock-jwks'
+import { Roles } from '../../src/constants'
+import assert from 'node:assert'
+
+describe('POST /tenants', () => {
+    let jwks: JWKSMock
+    let stopJWKS: () => void
+
+    beforeEach(async () => {
+        await db.execute(sql`TRUNCATE TABLE users RESTART IDENTITY CASCADE`)
+        jwks = mockJWKS.createJWKSMock('http://localhost:5501')
+        stopJWKS = jwks.start()
+    })
+
+    after(async () => {
+        await pool.end()
+        stopJWKS()
+    })
+
+    describe('fields are missing', () => {
+        it('should return 400 if tenant name is missing', async () => {
+            const tenantsData = {
+                address: 'tenant address',
+            }
+
+            const token = jwks.token({
+                sub: '1',
+                role: Roles.ADMIN,
+            })
+
+            const response = await request(app)
+                .post('/tenants')
+                .set('Cookie', [`accessToken=${token}`])
+                .send(tenantsData)
+
+            assert.strictEqual(response.statusCode, 400)
+        })
+
+        it('should return 400 if tenant name is empaty', async () => {
+            const tenantsData = {
+                name: '',
+                address: 'tenant address',
+            }
+
+            const token = jwks.token({
+                sub: '1',
+                role: Roles.ADMIN,
+            })
+
+            const response = await request(app)
+                .post('/tenants')
+                .set('Cookie', [`accessToken=${token}`])
+                .send(tenantsData)
+
+            assert.strictEqual(response.statusCode, 400)
+        })
+        it('should return 400 if tenant address is missing', async () => {
+            const tenantsData = {
+                name: 'tenant 1',
+            }
+
+            const token = jwks.token({
+                sub: '1',
+                role: Roles.ADMIN,
+            })
+
+            const response = await request(app)
+                .post('/tenants')
+                .set('Cookie', [`accessToken=${token}`])
+                .send(tenantsData)
+
+            assert.strictEqual(response.statusCode, 400)
+        })
+
+        it('should return 400 if tenant address is empty', async () => {
+            const tenantsData = {
+                name: 'tenant 1',
+                address: '',
+            }
+
+            const token = jwks.token({
+                sub: '1',
+                role: Roles.ADMIN,
+            })
+
+            const response = await request(app)
+                .post('/tenants')
+                .set('Cookie', [`accessToken=${token}`])
+                .send(tenantsData)
+
+            assert.strictEqual(response.statusCode, 400)
+        })
+    })
+})

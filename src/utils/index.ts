@@ -1,3 +1,6 @@
+import { db } from '../db/index.js'
+import { tenants } from '../db/schema.js'
+
 export const isValidJWT = (token: string | null) => {
     if (!token) return null
 
@@ -12,4 +15,16 @@ export const isValidJWT = (token: string | null) => {
     } catch {
         return false
     }
+}
+
+export const createTenant = async () => {
+    const [tenant] = await db
+        .insert(tenants)
+        .values({
+            name: 'tenant 1',
+            address: 'tenant address 1',
+        })
+        .returning({ id: tenants.id })
+
+    return tenant
 }

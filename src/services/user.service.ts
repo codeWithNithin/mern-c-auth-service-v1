@@ -30,6 +30,7 @@ class UserService {
             ...userData,
             password: hashedPassword,
             role: Roles.CUSTOMER,
+            tenantId: userData?.tenantId ? userData.tenantId : null,
         })
 
         if (!user) {
@@ -84,6 +85,32 @@ class UserService {
 
     async logout(tokenId: number) {
         await this.userRepository.deleteRefreshToken(tokenId)
+    }
+
+    async createAdmin(userData: RegisterUserInput) {
+        const existingUser = await this.userRepository.findByEmail(
+            userData.email,
+        )
+
+        if (existingUser) {
+            throw createHttpError(400, 'User is already registered')
+        }
+
+        const hashedPassword = await this.passwordService.createHashPassword(
+            userData.password,
+        )
+
+        const user = await this.userRepository.createUser({
+            ...userData,
+            password: hashedPassword,
+            role: Roles.ADMIN,
+        })
+
+        if (!user) {
+            throw createHttpError(500, 'Failed to create user')
+        }
+
+        return user
     }
 
     private async issueTokens(user: {

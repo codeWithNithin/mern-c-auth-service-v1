@@ -3,6 +3,8 @@ import type { HttpError } from 'http-errors'
 import logger from './config/logger.js'
 import authRouter from './routes/auth.route.js'
 import cookieParser from 'cookie-parser'
+import tenantRouter from './routes/tenant.route.js'
+import userRouter from './routes/user.route.js'
 
 const app = express()
 
@@ -12,6 +14,8 @@ app.use(cookieParser())
 app.use(express.static('public', { dotfiles: 'allow' }))
 
 app.use('/auth', authRouter)
+app.use('/tenants', tenantRouter)
+app.use('/users', userRouter)
 
 app.use((err: HttpError, req: Request, res: Response) => {
     logger.error('error in global err handler', err.message)

@@ -3,6 +3,7 @@ export interface RegisterUserInput {
     lastName: string
     email: string
     password: string
+    tenantId?: number | null
 }
 
 export interface NewUser {
@@ -11,6 +12,7 @@ export interface NewUser {
     email: string
     password: string
     role: string
+    tenantId?: number | null
 }
 
 export interface AuthResult {
@@ -21,4 +23,9 @@ export interface AuthResult {
 
 export interface IRefreshTokenPayload {
     id: string
+}
+
+export interface TenantUserInput {
+    name: string
+    address: string
 }

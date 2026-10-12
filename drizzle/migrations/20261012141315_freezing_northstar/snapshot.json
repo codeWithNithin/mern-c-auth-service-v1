@@ -1,8 +1,8 @@
 {
     "version": "8",
     "dialect": "postgres",
-    "id": "2738a993-bf51-4b9d-8a03-eb9921b3c4cd",
-    "prevIds": ["1c6fe2f0-9434-45c0-ba1b-9706cf66f1f0"],
+    "id": "e468e03b-f977-4c82-b159-8e5f9b1215c9",
+    "prevIds": ["c2314132-f80d-42b9-bc6b-1c5ea529dd06"],
     "ddl": [
         {
             "isRlsEnabled": false,
@@ -233,7 +233,7 @@
         {
             "type": "integer",
             "typeSchema": null,
-            "notNull": true,
+            "notNull": false,
             "dimensions": 0,
             "default": null,
             "generated": null,

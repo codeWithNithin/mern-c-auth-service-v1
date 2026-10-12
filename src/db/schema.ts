@@ -13,9 +13,7 @@ export const users = pgTable('users', {
     email: varchar('email', { length: 255 }).notNull().unique(),
     password: varchar('password', { length: 60 }).notNull(),
     role: varchar('role', { length: 20 }).notNull(),
-    tenantId: integer('tenantId')
-        .notNull()
-        .references(() => tenants.id),
+    tenantId: integer('tenantId').references(() => tenants.id),
 })
 
 export const refreshTokens = pgTable('refreshtokens', {
