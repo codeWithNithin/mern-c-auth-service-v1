@@ -30,6 +30,12 @@ class TokenService {
                     cause: err,
                 })
             }
+
+            if (!Config.PRIVATE_KEY) {
+                throw createHttpError(500, 'Secret key not found')
+            }
+
+            this.accessTokenSecret = Config.PRIVATE_KEY.replace(/\\n/g, '\n')
         }
 
         this.refreshTokenSecret ??= Config.REFRESH_TOKEN_SECRET

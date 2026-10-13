@@ -2,8 +2,14 @@ import dotenv from 'dotenv'
 
 dotenv.config({ path: `./.env.${process.env.NODE_ENV || 'dev'}` })
 
-const { NODE_ENV, PORT, DATABASE_URL, REFRESH_TOKEN_SECRET, JWKS_URI } =
-    process.env
+const {
+    NODE_ENV,
+    PORT,
+    DATABASE_URL,
+    REFRESH_TOKEN_SECRET,
+    JWKS_URI,
+    PRIVATE_KEY,
+} = process.env
 
 export const Config = {
     port: PORT || 3000,
@@ -11,4 +17,5 @@ export const Config = {
     DATABASE_URL,
     REFRESH_TOKEN_SECRET,
     JWKS_URI,
+    PRIVATE_KEY,
 }

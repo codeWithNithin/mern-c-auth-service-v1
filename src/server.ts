@@ -1,7 +1,7 @@
 import app from './app.js'
 import { Config } from './config/env.js'
 import logger from './config/logger.js'
-import { connectDB } from './db/index.js'
+import { connectDB, db } from './db/index.js'
 import TokenService from './services/token.service.js'
 
 async function startServer() {
@@ -10,7 +10,7 @@ async function startServer() {
 
         const PORT: number = Number(Config.port)
 
-        const tokenService = new TokenService()
+        const tokenService = new TokenService(db)
         tokenService.initialize()
 
         app.listen(PORT, () => {
