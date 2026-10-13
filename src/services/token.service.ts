@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url'
 import createHttpError from 'http-errors'
 import { refreshTokens } from '../db/schema.js'
 import type { db as database } from '../db/index.js'
+import { eq } from 'drizzle-orm'
 
 class TokenService {
     constructor(private readonly db: typeof database) {}
@@ -85,6 +86,10 @@ class TokenService {
             .returning({ id: refreshTokens.id })
 
         return newRefreshToken
+    }
+
+    async deleteRefreshToken(id: number) {
+        await this.db.delete(refreshTokens).where(eq(refreshTokens.id, id))
     }
 }
 

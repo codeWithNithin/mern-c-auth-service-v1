@@ -9,7 +9,7 @@ class TenantController {
         private logger: Logger,
     ) {}
 
-    async createTenant(req: Request, res: Response, next: NextFunction) {
+    async create(req: Request, res: Response, next: NextFunction) {
         const result = validationResult(req)
 
         if (!result.isEmpty()) {
@@ -37,7 +37,7 @@ class TenantController {
         }
     }
 
-    async findAllTenant(req: Request, res: Response, next: NextFunction) {
+    async find(req: Request, res: Response, next: NextFunction) {
         try {
             const tenants = await this.tenantService.findAllTenant()
 

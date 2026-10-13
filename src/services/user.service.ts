@@ -4,7 +4,7 @@ import type UserRepository from '../repositories/user.repository.js'
 import type PasswordService from './password.service.js'
 import type TokenService from './token.service.js'
 import { Roles } from '../constants/index.js'
-import type { AuthResult, RegisterUserInput } from '../types/index.js'
+import type { AuthResult, NewUser, RegisterUserInput } from '../types/index.js'
 
 class UserService {
     constructor(
@@ -78,13 +78,13 @@ class UserService {
 
         const result = await this.issueTokens(user)
 
-        await this.userRepository.deleteRefreshToken(user.tokenId)
+        await this.tokenService.deleteRefreshToken(user.tokenId)
 
         return result
     }
 
     async logout(tokenId: number) {
-        await this.userRepository.deleteRefreshToken(tokenId)
+        return await this.tokenService.deleteRefreshToken(tokenId)
     }
 
     async createAdmin(userData: RegisterUserInput) {
@@ -138,6 +138,79 @@ class UserService {
         })
 
         return { user: { id: user.id }, accessToken, refreshToken }
+    }
+
+    async create(userData: NewUser) {
+        const existingUser = await this.userRepository.findByEmail(
+            userData.email,
+        )
+
+        if (existingUser) {
+            throw createHttpError(400, 'User is already registered')
+        }
+
+        const hashedPassword = await this.passwordService.createHashPassword(
+            userData.password,
+        )
+
+        const user = await this.userRepository.createUser({
+            ...userData,
+            password: hashedPassword,
+            role: Roles.CUSTOMER,
+            tenantId: userData?.tenantId ? userData.tenantId : null,
+        })
+
+        if (!user) {
+            throw createHttpError(500, 'Failed to create user')
+        }
+
+        return user
+    }
+
+    async find() {
+        return await this.userRepository.find()
+    }
+
+    async findById(id: number) {
+        const tenant = await this.userRepository.findById(id)
+
+        if (!tenant) {
+            throw createHttpError(400, 'user does not exists')
+        }
+
+        return tenant
+    }
+
+    async findByIdAndUpdate(id: number, data: NewUser) {
+        const tenant = await this.userRepository.findById(id)
+
+        if (!tenant) {
+            throw createHttpError(400, 'user does not exists')
+        }
+
+        const updatedTenant = await this.userRepository.update(id, data)
+
+        if (!updatedTenant) {
+            throw createHttpError(500, 'Failed to update user data')
+        }
+
+        return updatedTenant
+    }
+
+    async findByIdAndDelete(id: number) {
+        const tenant = await this.userRepository.findById(id)
+
+        if (!tenant) {
+            throw createHttpError(400, 'user does not exists')
+        }
+
+        const updatedTenant = await this.userRepository.delete(id)
+
+        if (!updatedTenant) {
+            throw createHttpError(500, 'Failed to update user data')
+        }
+
+        return updatedTenant
     }
 }
 

@@ -8,7 +8,7 @@ import TenantService from '../services/tenant.service.js'
 import TenantRepository from '../repositories/tenant.repository.js'
 import { db } from '../db/index.js'
 import logger from '../config/logger.js'
-import { validateTenantId } from '../middlewares/validateTenantId.middleware.js'
+import { validateTenantId } from '../middlewares/validatId.middleware.js'
 
 const tenantRouter = express.Router()
 
@@ -23,14 +23,14 @@ tenantRouter.post(
     authenticateMiddleware,
     canAccess([Roles.ADMIN]),
     tenantValidator,
-    tenantController.createTenant.bind(tenantController),
+    tenantController.create.bind(tenantController),
 )
 
 tenantRouter.get(
     '/',
     authenticateMiddleware,
     canAccess([Roles.ADMIN]),
-    tenantController.findAllTenant.bind(tenantController),
+    tenantController.find.bind(tenantController),
 )
 
 tenantRouter.get(
