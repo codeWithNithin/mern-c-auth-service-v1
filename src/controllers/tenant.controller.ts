@@ -30,7 +30,7 @@ class TenantController {
                 id: newTenant?.id,
             })
 
-            res.status(200).json({ id: newTenant?.id })
+            res.status(201).json({ id: newTenant?.id })
         } catch (err) {
             next(err)
             return
