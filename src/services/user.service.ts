@@ -156,7 +156,7 @@ class UserService {
         const user = await this.userRepository.createUser({
             ...userData,
             password: hashedPassword,
-            role: Roles.CUSTOMER,
+            role: userData.role ? userData.role : Roles.CUSTOMER,
             tenantId: userData?.tenantId ? userData.tenantId : null,
         })
 

@@ -38,6 +38,7 @@ userRouter.post(
     '/',
     authenticateMiddleware,
     canAccess([Roles.ADMIN]),
+    userValidator,
     userController.create.bind(userController),
 )
 
@@ -45,6 +46,7 @@ userRouter.get(
     '/',
     authenticateMiddleware,
     canAccess([Roles.ADMIN]),
+    userValidator,
     userController.find.bind(userController),
 )
 
@@ -53,6 +55,7 @@ userRouter.get(
     authenticateMiddleware,
     canAccess([Roles.ADMIN]),
     validateTenantId,
+    userValidator,
     userController.findById.bind(userController),
 )
 

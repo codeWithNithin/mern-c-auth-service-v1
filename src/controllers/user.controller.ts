@@ -66,7 +66,7 @@ class UserController {
                 id: newUser?.id,
             })
 
-            res.status(200).json({ id: newUser?.id })
+            res.status(201).json({ id: newUser?.id })
         } catch (err) {
             next(err)
             return

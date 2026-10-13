@@ -13,8 +13,10 @@ describe('POST /tenants', () => {
     let stopJWKS: () => void
 
     beforeEach(async () => {
-        await db.execute(sql`TRUNCATE TABLE users RESTART IDENTITY CASCADE`)
-        await db.execute(sql`TRUNCATE TABLE tenants RESTART IDENTITY CASCADE`)
+        await db.execute(sql`
+        TRUNCATE TABLE users, tenants
+        RESTART IDENTITY CASCADE
+    `)
         jwks = mockJWKS.createJWKSMock('http://localhost:5501')
         stopJWKS = jwks.start()
     })
