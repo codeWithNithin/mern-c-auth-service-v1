@@ -12,7 +12,9 @@ import { isValidJWT } from '../../src/utils'
 
 describe('POST /auth/login', () => {
     beforeEach(async () => {
-        await db.execute(sql`TRUNCATE TABLE users RESTART IDENTITY CASCADE`)
+        await db.execute(
+            sql`TRUNCATE TABLE users, refreshTokens RESTART IDENTITY CASCADE`,
+        )
     })
 
     after(async () => {
