@@ -1,0 +1,6 @@
+{
+    "sonarlint.connectedMode.project": {
+        "connectionId": "codewithnithin",
+        "projectKey": "codeWithNithin_mern-c-auth-service-v1"
+    }
+}
