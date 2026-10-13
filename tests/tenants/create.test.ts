@@ -178,5 +178,20 @@ describe('POST /tenants', () => {
 
             assert.strictEqual(response.statusCode, 403)
         })
+
+        it('should return 401 status code if token is invalid', async () => {
+            const tenantData = {
+                name: 'Tenant name',
+                address: 'Tenant address',
+            }
+            const response = await request(app)
+                .post(`/tenants`)
+                .send(tenantData)
+
+            const tenantList = await db.select().from(tenants)
+
+            assert.strictEqual(tenantList.length, 0)
+            assert.strictEqual(response.statusCode, 401)
+        })
     })
 })

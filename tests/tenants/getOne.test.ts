@@ -80,4 +80,58 @@ describe('GET /tenants:/id', () => {
         assert.ok('name' in foundTenant)
         assert.ok('address' in foundTenant)
     })
+
+    it('should return 403 status code if user is not admin', async () => {
+        const [tenant] = await db
+            .insert(tenants)
+            .values({
+                name: 'default name',
+                address: 'default address',
+            })
+            .returning({ id: tenants.id })
+
+        // ARRANGE
+        const token = jwks.token({
+            sub: '1',
+            role: Roles.MANAGER,
+        })
+
+        const id = tenant.id
+
+        const response = await request(app)
+            .get(`/tenants/${id}`)
+            .set('Cookie', [`accessToken=${token}`])
+            .send()
+
+        assert.strictEqual(response.statusCode, 403)
+    })
+
+    it('should return 400 if id is invalid', async () => {
+        const token = jwks.token({
+            sub: '1',
+            role: Roles.ADMIN,
+        })
+
+        const id = 3
+
+        // ACT
+        const response = await request(app)
+            .get(`/tenants/${id}`)
+            .set('Cookie', [`accessToken=${token}`])
+            .send()
+
+        // ASSERT
+        assert.strictEqual(response.statusCode, 400)
+    })
+
+    it('should return 401 status code if token is invalid', async () => {
+        const id = '1'
+
+        const response = await request(app).get(`/tenants/${id}`).send()
+
+        const tenantList = await db.select().from(tenants)
+
+        assert.strictEqual(tenantList.length, 0)
+        assert.strictEqual(response.statusCode, 401)
+    })
 })

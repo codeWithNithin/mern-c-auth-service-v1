@@ -71,4 +71,36 @@ describe('GET /tenants', () => {
         // ASSERT
         assert.strictEqual(response.body.length, tenantsList.length)
     })
+
+    it('should return 401 status code if token is invalid', async () => {
+        const response = await request(app).get(`/tenants`).send()
+
+        const tenantList = await db.select().from(tenants)
+
+        assert.strictEqual(tenantList.length, 0)
+        assert.strictEqual(response.statusCode, 401)
+    })
+
+    it('should return 403 status code if user is not admin', async () => {
+        await db
+            .insert(tenants)
+            .values({
+                name: 'default name',
+                address: 'default address',
+            })
+            .returning({ id: tenants.id })
+
+        // ARRANGE
+        const token = jwks.token({
+            sub: '1',
+            role: Roles.MANAGER,
+        })
+
+        const response = await request(app)
+            .get(`/tenants`)
+            .set('Cookie', [`accessToken=${token}`])
+            .send()
+
+        assert.strictEqual(response.statusCode, 403)
+    })
 })
