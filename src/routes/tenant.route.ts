@@ -26,12 +26,7 @@ tenantRouter.post(
     tenantController.create.bind(tenantController),
 )
 
-tenantRouter.get(
-    '/',
-    authenticateMiddleware,
-    canAccess([Roles.ADMIN]),
-    tenantController.find.bind(tenantController),
-)
+tenantRouter.get('/', tenantController.find.bind(tenantController))
 
 tenantRouter.get(
     '/:id',
