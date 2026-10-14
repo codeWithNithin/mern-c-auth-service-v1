@@ -5,9 +5,16 @@ import authRouter from './routes/auth.route.js'
 import cookieParser from 'cookie-parser'
 import tenantRouter from './routes/tenant.route.js'
 import userRouter from './routes/user.route.js'
+import cors from 'cors'
 
 const app = express()
 
+app.use(
+    cors({
+        origin: [],
+        credentials: true,
+    }),
+)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
