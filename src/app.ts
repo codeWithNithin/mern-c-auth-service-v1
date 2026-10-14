@@ -6,12 +6,13 @@ import cookieParser from 'cookie-parser'
 import tenantRouter from './routes/tenant.route.js'
 import userRouter from './routes/user.route.js'
 import cors from 'cors'
+import { Config } from './config/env.js'
 
 const app = express()
 
 app.use(
     cors({
-        origin: [],
+        origin: [Config.ADMIN_UI!],
         credentials: true,
     }),
 )
